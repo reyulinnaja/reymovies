@@ -1,7 +1,11 @@
-export default function Home() {
-  return (
-    <div>
-      <h1 className="font-bold text-blue-500">Hello World</h1>
-    </div>
-  );
-}
+import React from "react";
+
+import type { NextPage } from "next";
+
+import Home from "@/features/Home";
+
+const HomePage: React.FC<NextPage> = () => {
+  return <Home />;
+};
+
+export default HomePage;
