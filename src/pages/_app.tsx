@@ -24,7 +24,7 @@ const queryClient = new QueryClient({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className={`${poppins.className}`}>
+      <div className={`${poppins.className} `}>
         <Navbar />
         <Sidebar />
         <div className="w-full pb-7 pl-56 pr-8 pt-16">
