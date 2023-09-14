@@ -28,11 +28,6 @@ const sidebarItems: SidebarItems[] = [
     url: "/tvseries",
   },
   {
-    name: "Upcoming",
-    icon: BsCalendar4Week,
-    url: "/upcoming",
-  },
-  {
     name: "Favorite",
     icon: BsStars,
     url: "/favorite",
@@ -43,7 +38,7 @@ const Sidebar = () => {
   const router = useRouter();
 
   return (
-    <section className="fixed left-0 top-0 h-screen max-h-screen w-48 bg-slate-900 pb-16 pt-7">
+    <section className="fixed left-0 top-0 z-50 h-screen max-h-screen w-48 bg-slate-900 pb-16 pt-7">
       <h1 className="text-center text-2xl font-bold text-white">ReyMovies</h1>
       <div className="mt-5 flex flex-col">
         {sidebarItems.map((item, index) => {
