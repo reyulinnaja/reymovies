@@ -7,12 +7,14 @@ interface NavbarStore {
   includeVideo: boolean;
   sortName: string;
   sortBy: string;
+  query: string;
   isSearch: () => void;
   isFilter: () => void;
   isIncludeAdult: () => void;
   isIncludeVideo: () => void;
   setSortName: (value: string) => void;
   setSortBy: () => void;
+  setQuery: (value: string) => void;
 }
 
 export const useNavbarStore = createWithEqualityFn<NavbarStore>(
@@ -23,7 +25,18 @@ export const useNavbarStore = createWithEqualityFn<NavbarStore>(
     includeVideo: false,
     sortName: "popularity",
     sortBy: "desc",
-    isSearch: () => set((state) => ({ search: !state.search })),
+    query: "",
+    isSearch: () =>
+      set((state) => {
+        if (state.search) {
+          return {
+            search: false,
+            query: "",
+          };
+        } else {
+          return { search: true };
+        }
+      }),
     isFilter: () =>
       set((state) => {
         if (state.filter) {
@@ -44,6 +57,7 @@ export const useNavbarStore = createWithEqualityFn<NavbarStore>(
     setSortName: (value: string) => set(() => ({ sortName: value })),
     setSortBy: () =>
       set((state) => ({ sortBy: state.sortBy === "desc" ? "asc" : "desc" })),
+    setQuery: (value: string) => set(() => ({ query: value })),
   }),
   Object.is,
 );

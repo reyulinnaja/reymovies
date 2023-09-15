@@ -22,3 +22,18 @@ export const useDiscoverTvSeriesQuery = () => {
     },
   );
 };
+
+export const useSearchTvSeriesQuery = (query: string) => {
+  return useInfiniteQuery(
+    ["search_tv", query],
+    async ({ pageParam = 1 }) => {
+      const response = await axiosInstance.get(
+        `/search/tv?page=${pageParam}&query=${query}`,
+      );
+      return response.data;
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.page + 1,
+    },
+  );
+};

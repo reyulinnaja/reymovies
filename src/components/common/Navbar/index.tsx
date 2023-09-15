@@ -1,7 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-"use client";
-
-import { useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -30,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { debounce } from "@/lib/utils";
 
 const Navbar = () => {
   const router = useRouter();
@@ -49,6 +47,7 @@ const Navbar = () => {
     setSortName,
     sortBy,
     setSortBy,
+    setQuery,
   ] = useNavbarStore(
     (state) => [
       state.search,
@@ -63,9 +62,15 @@ const Navbar = () => {
       state.setSortName,
       state.sortBy,
       state.setSortBy,
+      state.setQuery,
     ],
     shallow,
   );
+
+  const handleSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = e.target.value;
+    setQuery(newQuery);
+  }, 500);
 
   return (
     <nav
@@ -73,9 +78,14 @@ const Navbar = () => {
         homePage ? "w-auto" : "w-full bg-slate-950/50 backdrop-blur-md"
       }`}
     >
+      {/* Search Input */}
       {search && (
-        <div className="flex-grow-0">
-          <Input type="text" placeholder="Search Movies.." />
+        <div className="w-72 flex-grow-0">
+          <Input
+            type="text"
+            placeholder={`Search ${moviesPage ? "Movies.." : "Tv Series.."}`}
+            onChange={handleSearch}
+          />
         </div>
       )}
       <TooltipProvider delayDuration={300}>
@@ -105,6 +115,8 @@ const Navbar = () => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+
+      {/* Filter Popover */}
       <TooltipProvider delayDuration={300}>
         <Tooltip>
           <Popover>
@@ -113,9 +125,10 @@ const Navbar = () => {
                 <Button
                   variant="outline"
                   size="icon"
+                  disabled={search}
                   className={`rounded-full bg-slate-700 text-slate-300 outline-none ${
                     filter ? "border-2 border-slate-500" : "border-none"
-                  } ${homePage && "hidden"}`}
+                  } ${homePage && "hidden"} ${search && "cursor-not-allowed"}`}
                 >
                   <BsFilter className="h-4 w-4" />
                 </Button>
@@ -194,6 +207,8 @@ const Navbar = () => {
           </Popover>
         </Tooltip>
       </TooltipProvider>
+
+      {/* Avatar */}
       <Avatar className="bg-slate-700">
         <AvatarImage
           src="https://api.dicebear.com/7.x/lorelei/svg?seed=U"

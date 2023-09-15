@@ -1,17 +1,63 @@
 import { BaseHeader, Card } from "@/components/common";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useDiscoverMoviesQuery } from "./hooks";
+import { useDiscoverMoviesQuery, useSearchMoviesQuery } from "./hooks";
+import { useNavbarStore } from "@/hooks/useNavbarStore";
+import { shallow } from "zustand/shallow";
 
 const Movies = () => {
+  const [query] = useNavbarStore((state) => [state.query], shallow);
+
   const { data, fetchNextPage, hasNextPage, isLoading } =
     useDiscoverMoviesQuery();
+
+  const {
+    data: searchData,
+    fetchNextPage: searchFetchNextPage,
+    hasNextPage: searchHasNextPage,
+    isLoading: searchIsLoading,
+  } = useSearchMoviesQuery(query);
 
   return (
     <div>
       <BaseHeader title="Movies - ReyMovies" />
       <h1 className="text-2xl font-bold">Discover Movies</h1>
       <div>
-        {isLoading ? (
+        {query.length >= 3 ? (
+          searchIsLoading ? (
+            <h1>Loading...</h1>
+          ) : (
+            searchData && (
+              <InfiniteScroll
+                dataLength={searchData.pages.length}
+                next={searchFetchNextPage}
+                hasMore={searchHasNextPage || false}
+                loader={<h4>Loading...</h4>}
+                endMessage={<p>End of list</p>}
+              >
+                {searchData.pages.map((pageData, i) => (
+                  <div
+                    key={i}
+                    className="mt-3 grid grid-cols-5 gap-x-4 gap-y-3"
+                  >
+                    {pageData.total_results !== 0 ? (
+                      pageData.results.map((item: any) => (
+                        <Card
+                          key={item.id}
+                          href={`/movies/${item.id}`}
+                          {...item}
+                        />
+                      ))
+                    ) : (
+                      <p className="col-span-5 text-center italic text-slate-700">
+                        Not Found Movies {query}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </InfiniteScroll>
+            )
+          )
+        ) : isLoading ? (
           <h1>Loading...</h1>
         ) : (
           data && (

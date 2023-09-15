@@ -26,3 +26,18 @@ export const useDiscoverMoviesQuery = () => {
     },
   );
 };
+
+export const useSearchMoviesQuery = (query: string) => {
+  return useInfiniteQuery(
+    ["search_movie", query],
+    async ({ pageParam = 1 }) => {
+      const response = await axiosInstance.get(
+        `/search/movie?page=${pageParam}&query=${query}`,
+      );
+      return response.data;
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.page + 1,
+    },
+  );
+};
