@@ -39,11 +39,11 @@ const Navbar = () => {
   const [
     search,
     filter,
-    includeAdultMovie,
+    includeAdult,
     includeVideo,
     isSearch,
     isFilter,
-    isIncludeAdultMovie,
+    isIncludeAdult,
     isIncludeVideo,
     sortName,
     setSortName,
@@ -53,11 +53,11 @@ const Navbar = () => {
     (state) => [
       state.search,
       state.filter,
-      state.includeAdultMovie,
+      state.includeAdult,
       state.includeVideo,
       state.isSearch,
       state.isFilter,
-      state.isIncludeAdultMovie,
+      state.isIncludeAdult,
       state.isIncludeVideo,
       state.sortName,
       state.setSortName,
@@ -174,17 +174,19 @@ const Navbar = () => {
                     <div className="flex items-center gap-4">
                       <p>Include Adult</p>
                       <Checkbox
-                        checked={includeAdultMovie}
-                        onCheckedChange={isIncludeAdultMovie}
+                        checked={includeAdult}
+                        onCheckedChange={isIncludeAdult}
                       />
                     </div>
-                    <div className="flex items-center gap-4">
-                      <p>Include Video</p>
-                      <Checkbox
-                        checked={includeVideo}
-                        onCheckedChange={isIncludeVideo}
-                      />
-                    </div>
+                    {moviesPage && (
+                      <div className="flex items-center gap-4">
+                        <p>Include Video</p>
+                        <Checkbox
+                          checked={includeVideo}
+                          onCheckedChange={isIncludeVideo}
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

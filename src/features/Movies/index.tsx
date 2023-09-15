@@ -1,9 +1,10 @@
 import { BaseHeader, Card } from "@/components/common";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useDiscoverMovies } from "./hooks";
+import { useDiscoverMoviesQuery } from "./hooks";
 
 const Movies = () => {
-  const { data, fetchNextPage, hasNextPage, isLoading } = useDiscoverMovies();
+  const { data, fetchNextPage, hasNextPage, isLoading } =
+    useDiscoverMoviesQuery();
 
   return (
     <div>

@@ -3,13 +3,13 @@ import { createWithEqualityFn } from "zustand/traditional";
 interface NavbarStore {
   search: boolean;
   filter: boolean;
-  includeAdultMovie: boolean;
+  includeAdult: boolean;
   includeVideo: boolean;
   sortName: string;
   sortBy: string;
   isSearch: () => void;
   isFilter: () => void;
-  isIncludeAdultMovie: () => void;
+  isIncludeAdult: () => void;
   isIncludeVideo: () => void;
   setSortName: (value: string) => void;
   setSortBy: () => void;
@@ -19,7 +19,7 @@ export const useNavbarStore = createWithEqualityFn<NavbarStore>(
   (set) => ({
     search: false,
     filter: false,
-    includeAdultMovie: false,
+    includeAdult: false,
     includeVideo: false,
     sortName: "popularity",
     sortBy: "desc",
@@ -29,7 +29,7 @@ export const useNavbarStore = createWithEqualityFn<NavbarStore>(
         if (state.filter) {
           return {
             filter: false,
-            includeAdultMovie: false,
+            includeAdult: false,
             sortName: "popularity",
             sortBy: "desc",
           };
@@ -37,8 +37,8 @@ export const useNavbarStore = createWithEqualityFn<NavbarStore>(
           return { filter: true };
         }
       }),
-    isIncludeAdultMovie: () =>
-      set((state) => ({ includeAdultMovie: !state.includeAdultMovie })),
+    isIncludeAdult: () =>
+      set((state) => ({ includeAdult: !state.includeAdult })),
     isIncludeVideo: () =>
       set((state) => ({ includeVideo: !state.includeVideo })),
     setSortName: (value: string) => set(() => ({ sortName: value })),
