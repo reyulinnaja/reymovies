@@ -1,43 +1,36 @@
-"use client";
+/* eslint-disable react-hooks/rules-of-hooks */
+import React from "react";
+import { useRouter } from "next/router";
+import { shallow } from "zustand/shallow";
+import { debounce } from "@/lib/utils";
 
-import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { BsFilter, BsSortAlphaDown, BsSortAlphaUpAlt } from "react-icons/bs";
-import { MdSearch, MdSearchOff } from "react-icons/md";
 import { useNavbarStore } from "@/hooks/useNavbarStore";
-import { shallow } from "zustand/shallow";
-import { useRouter } from "next/router";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { debounce } from "@/lib/utils";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@/lib/axios";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { BiChevronDown } from "react-icons/bi";
+import { FiLogOut } from "react-icons/fi";
+
+import {
+  useGetAccountDetailsQuery,
+  useLoginMutation,
+  useLogoutMutation,
+  usePostSessionIdQuery,
+} from "./hooks";
+import Search from "../Search";
+import SearchFilter from "../SearchFilter";
 
 const Navbar = () => {
   const router = useRouter();
   const homePage = router.pathname === "/";
   const moviesPage = router.pathname === "/movies";
+  const getLocalSessionId =
+    global?.localStorage && !!localStorage.getItem("session_id");
 
   const [
     search,
@@ -77,40 +70,14 @@ const Navbar = () => {
     setQuery(newQuery);
   }, 500);
 
-  const { mutate: login } = useMutation(
-    async () => {
-      const response = await axiosInstance.get("/authentication/token/new");
-      return response.data;
-    },
-    {
-      onSuccess: (data) => {
-        localStorage.setItem("token", data.request_token);
-        window.location.href = `https://www.themoviedb.org/authenticate/${data.request_token}?redirect_to=http://localhost:3000`;
-      },
-    },
-  );
+  const { mutate: useLogin } = useLoginMutation();
 
-  const { mutate: getSession } = useMutation(
-    async () => {
-      const response = await axiosInstance.post("/authentication/session/new", {
-        request_token: localStorage.getItem("token"),
-      });
+  const { data } = usePostSessionIdQuery();
 
-      console.log(response.data);
-      return response.data;
-    },
-    {
-      onSuccess: (data) => {
-        localStorage.setItem("session_id", data.session_id);
-      },
-    },
-  );
+  const { data: useAccountDetails, isSuccess: useAccountDetailsSuccess } =
+    useGetAccountDetailsQuery(getLocalSessionId);
 
-  useEffect(() => {
-    if (window.location.href.includes("approved=true")) {
-      getSession();
-    }
-  }, []);
+  const { mutate: useLogout } = useLogoutMutation();
 
   return (
     <nav
@@ -119,152 +86,61 @@ const Navbar = () => {
       }`}
     >
       {/* Search Input */}
-      {search && (
-        <div className="w-72 flex-grow-0">
-          <Input
-            type="text"
-            placeholder={`Search ${moviesPage ? "Movies.." : "Tv Series.."}`}
-            onChange={handleSearch}
-          />
-        </div>
-      )}
-      <TooltipProvider delayDuration={300}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className={`rounded-full bg-slate-700 text-slate-300 outline-none ${
-                search ? "border-2 border-slate-500" : "border-none"
-              } ${homePage && "hidden"}`}
-              onClick={isSearch}
-            >
-              {!search ? (
-                <MdSearch className="h-5 w-5" />
-              ) : (
-                <MdSearchOff className="h-5 w-5" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            {!search ? (
-              <p>Search {moviesPage ? "Movies" : "TV Series"}</p>
-            ) : (
-              <p>Remove Search</p>
-            )}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Search
+        search={search}
+        moviesPage={moviesPage}
+        handleSearch={handleSearch}
+        homePage={homePage}
+        isSearch={isSearch}
+      />
 
       {/* Filter Popover */}
-      <TooltipProvider delayDuration={300}>
-        <Tooltip>
-          <Popover>
-            <PopoverTrigger asChild>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  disabled={search}
-                  className={`rounded-full bg-slate-700 text-slate-300 outline-none ${
-                    filter ? "border-2 border-slate-500" : "border-none"
-                  } ${homePage && "hidden"} ${search && "cursor-not-allowed"}`}
-                >
-                  <BsFilter className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-            </PopoverTrigger>
-            <TooltipContent>
-              <p>Filter Search</p>
-            </TooltipContent>
-            <PopoverContent className="w-80">
-              <div className="grid gap-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium leading-none">Filter Search</h4>
-                  <div className="flex items-center gap-2">
-                    <p>{filter ? "on" : "off"}</p>
-                    <Switch checked={filter} onCheckedChange={isFilter} />
-                  </div>
-                </div>
-                {filter === true && (
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between">
-                      <p>Sort By</p>
-                      <div className="flex gap-2">
-                        <Select
-                          onValueChange={setSortName}
-                          defaultValue={sortName}
-                        >
-                          <SelectTrigger className="w-[150px]">
-                            <SelectValue placeholder="Movies" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="popularity">
-                              Popularity
-                            </SelectItem>
-                            <SelectItem value="revenue">Revenue</SelectItem>
-                            <SelectItem value="vote_average">
-                              Vote Average
-                            </SelectItem>
-                            <SelectItem value="vote_count">
-                              Vote Count
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={setSortBy}
-                        >
-                          {sortBy === "desc" ? (
-                            <BsSortAlphaDown />
-                          ) : (
-                            <BsSortAlphaUpAlt />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <p>Include Adult</p>
-                      <Checkbox
-                        checked={includeAdult}
-                        onCheckedChange={isIncludeAdult}
-                      />
-                    </div>
-                    {moviesPage && (
-                      <div className="flex items-center gap-4">
-                        <p>Include Video</p>
-                        <Checkbox
-                          checked={includeVideo}
-                          onCheckedChange={isIncludeVideo}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
-        </Tooltip>
-      </TooltipProvider>
+      <SearchFilter
+        search={search}
+        filter={filter}
+        homePage={homePage}
+        moviesPage={moviesPage}
+        isFilter={isFilter}
+        includeAdult={includeAdult}
+        isIncludeAdult={isIncludeAdult}
+        includeVideo={includeVideo}
+        isIncludeVideo={isIncludeVideo}
+        sortName={sortName}
+        setSortName={setSortName}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
 
       {/* Avatar */}
-      {/* <div className="flex items-center gap-3 rounded-full bg-slate-800">
-          <Avatar className="bg-slate-700">
-            <AvatarImage
-              src="https://api.dicebear.com/7.x/lorelei/svg?seed=U"
-              alt="Ulinnaja"
-            />
-            <AvatarFallback>UN</AvatarFallback>
-          </Avatar>
-          <div className="flex items-center gap-1 pr-2">
-            <p>Ulinnaja</p>
-            <BiChevronDown className="h-5 w-5" />
-          </div>
-        </div> */}
-      <Button variant="outline" onClick={() => login()}>
-        Login
-      </Button>
+      {useAccountDetailsSuccess ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex cursor-pointer items-center gap-3 rounded-full bg-slate-800">
+              <Avatar className="bg-slate-700">
+                <AvatarImage
+                  src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${useAccountDetails?.username}`}
+                  alt={useAccountDetails?.username}
+                />
+                <AvatarFallback>UN</AvatarFallback>
+              </Avatar>
+              <div className="flex items-center gap-1 pr-2">
+                <p>{useAccountDetails?.username}</p>
+                <BiChevronDown className="h-5 w-5" />
+              </div>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuItem onClick={() => useLogout()}>
+              <FiLogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Button variant="outline" onClick={() => useLogin()}>
+          Login
+        </Button>
+      )}
     </nav>
   );
 };
