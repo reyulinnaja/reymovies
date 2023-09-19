@@ -4,6 +4,7 @@ import {
   getRequestToken,
   postSessionId,
 } from "@/services/AuthServices";
+import type { NavbarStore } from "@/hooks/useNavbarStore";
 
 export const getRequestTokenUseCase = async () => {
   const response = await getRequestToken();
@@ -24,9 +25,11 @@ export const postSessionIdUseCase = async () => {
   }
 };
 
-export const getAccountDetailsUseCase = async () => {
+export const getAccountDetailsUseCase = async (
+  setUserId: NavbarStore["setUserId"],
+) => {
   const response = await getAccountDetails();
-  console.log(response.data);
+  setUserId(response.data.id);
   return response.data;
 };
 

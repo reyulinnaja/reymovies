@@ -1,6 +1,6 @@
 import { createWithEqualityFn } from "zustand/traditional";
 
-interface NavbarStore {
+export interface NavbarStore {
   search: boolean;
   filter: boolean;
   includeAdult: boolean;
@@ -8,6 +8,7 @@ interface NavbarStore {
   sortName: string;
   sortBy: string;
   query: string;
+  userId: number;
   isSearch: () => void;
   isFilter: () => void;
   isIncludeAdult: () => void;
@@ -15,6 +16,7 @@ interface NavbarStore {
   setSortName: (value: string) => void;
   setSortBy: () => void;
   setQuery: (value: string) => void;
+  setUserId: (value: number) => void;
 }
 
 export const useNavbarStore = createWithEqualityFn<NavbarStore>(
@@ -26,6 +28,7 @@ export const useNavbarStore = createWithEqualityFn<NavbarStore>(
     sortName: "popularity",
     sortBy: "desc",
     query: "",
+    userId: 0,
     isSearch: () =>
       set((state) => {
         if (state.search) {
@@ -58,6 +61,7 @@ export const useNavbarStore = createWithEqualityFn<NavbarStore>(
     setSortBy: () =>
       set((state) => ({ sortBy: state.sortBy === "desc" ? "asc" : "desc" })),
     setQuery: (value: string) => set(() => ({ query: value })),
+    setUserId: (value: number) => set(() => ({ userId: value })),
   }),
   Object.is,
 );
