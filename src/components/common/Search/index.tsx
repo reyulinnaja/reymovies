@@ -13,7 +13,7 @@ interface SearchProps {
   search: boolean;
   moviesPage: boolean;
   handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  homePage: boolean;
+  hiddenSeach: boolean;
   isSearch: () => void;
 }
 
@@ -21,13 +21,13 @@ const Search: React.FC<SearchProps> = ({
   search,
   moviesPage,
   handleSearch,
-  homePage,
+  hiddenSeach,
   isSearch,
 }) => {
   return (
     <>
       {search && (
-        <div className="w-72 flex-grow-0">
+        <div className={`w-72 flex-grow-0 ${hiddenSeach && "hidden"}`}>
           <Input
             type="text"
             placeholder={`Search ${moviesPage ? "Movies.." : "Tv Series.."}`}
@@ -43,7 +43,7 @@ const Search: React.FC<SearchProps> = ({
               size="icon"
               className={`rounded-full bg-slate-700 text-slate-300 outline-none ${
                 search ? "border-2 border-slate-500" : "border-none"
-              } ${homePage && "hidden"}`}
+              } ${hiddenSeach && "hidden"}`}
               onClick={isSearch}
             >
               {!search ? (

@@ -1,13 +1,22 @@
 import { BaseHeader, Card } from "@/components/common";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useDiscoverTvSeriesQuery, useSearchTvSeriesQuery } from "./hooks";
+import {
+  useAddTvSeriesToFavorite,
+  useDiscoverTvSeriesQuery,
+  useRemoveTvSeriesFromFavorite,
+  useSearchTvSeriesQuery,
+} from "./hooks";
 import { useNavbarStore } from "@/hooks/useNavbarStore";
 import { shallow } from "zustand/shallow";
+import React from "react";
 
-const TvSeries = () => {
-  const [query] = useNavbarStore((state) => [state.query], shallow);
+const TvSeries: React.FC = () => {
+  const [query, userId] = useNavbarStore(
+    (state) => [state.query, state.userId],
+    shallow,
+  );
 
-  const { data, fetchNextPage, hasNextPage, isLoading } =
+  const { data, fetchNextPage, hasNextPage, isLoading, refetch } =
     useDiscoverTvSeriesQuery();
 
   const {
@@ -15,10 +24,24 @@ const TvSeries = () => {
     fetchNextPage: searchFetchNextPage,
     hasNextPage: searchHasNextPage,
     isLoading: searchIsLoading,
+    refetch: searchRefetch,
   } = useSearchTvSeriesQuery(query);
 
+  const { mutate: addFavorite } = useAddTvSeriesToFavorite(userId, () => {
+    refetch();
+    searchRefetch();
+  });
+
+  const { mutate: removeFavorite } = useRemoveTvSeriesFromFavorite(
+    userId,
+    () => {
+      refetch();
+      searchRefetch();
+    },
+  );
+
   return (
-    <div>
+    <React.Fragment>
       <BaseHeader title="Tv Series - ReyMovies" />
       <h1 className="text-2xl font-bold">Discover Tv Series</h1>
       <div>
@@ -43,7 +66,8 @@ const TvSeries = () => {
                       pageData.results.map((item: any) => (
                         <Card
                           key={item.id}
-                          href={`/tvseries/${item.id}`}
+                          addFavorite={() => addFavorite(item.id)}
+                          removeFavorite={() => removeFavorite(item.id)}
                           {...item}
                         />
                       ))
@@ -73,7 +97,8 @@ const TvSeries = () => {
                   {pageData.results.map((item: any) => (
                     <Card
                       key={item.id}
-                      href={`/tvseries/${item.id}`}
+                      addFavorite={() => addFavorite(item.id)}
+                      removeFavorite={() => removeFavorite(item.id)}
                       {...item}
                     />
                   ))}
@@ -83,7 +108,7 @@ const TvSeries = () => {
           )
         )}
       </div>
-    </div>
+    </React.Fragment>
   );
 };
 

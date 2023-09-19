@@ -11,25 +11,80 @@ import {
 } from "./hooks";
 import CarauselMovies from "./sections/Carausel";
 import CardList from "./sections/CardList";
+import {
+  useAddMovieToFavorite,
+  useRemoveMovieFromFavorite,
+} from "../Movies/hooks";
+import { useNavbarStore } from "@/hooks/useNavbarStore";
+import { shallow } from "zustand/shallow";
+import {
+  useAddTvSeriesToFavorite,
+  useRemoveTvSeriesFromFavorite,
+} from "../TvSeries/hooks";
 
 const Home: React.FC = () => {
+  const [userId] = useNavbarStore((state) => [state.userId], shallow);
+
   const { data: dataCarausel, isLoading: loadingCarausel } =
     useCarauselMoviesQuery();
 
-  const { data: dataPopularMovies, isLoading: loadingPopularMovies } =
-    usePopularMoviesQuery();
+  const {
+    data: dataPopularMovies,
+    isLoading: loadingPopularMovies,
+    refetch: refetchPopularMovies,
+  } = usePopularMoviesQuery();
 
-  const { data: dataTopRatedMovies, isLoading: loadingTopRatedMovies } =
-    useTopRatedMoviesQuery();
+  const {
+    data: dataTopRatedMovies,
+    isLoading: loadingTopRatedMovies,
+    refetch: refetchTopRatedMovies,
+  } = useTopRatedMoviesQuery();
 
-  const { data: dataUpcomingMovies, isLoading: loadingUpcomingMovies } =
-    useUpcomingMoviesQuery();
+  const {
+    data: dataUpcomingMovies,
+    isLoading: loadingUpcomingMovies,
+    refetch: refetchUpcomingMovies,
+  } = useUpcomingMoviesQuery();
 
-  const { data: dataPopularTv, isLoading: loadingPopularTv } =
-    usePopularTvQuery();
+  const {
+    data: dataPopularTv,
+    isLoading: loadingPopularTv,
+    refetch: refetchPopularTv,
+  } = usePopularTvQuery();
 
-  const { data: dataTopRatedTv, isLoading: loadingTopRatedTv } =
-    useTopRatedTvQuery();
+  const {
+    data: dataTopRatedTv,
+    isLoading: loadingTopRatedTv,
+    refetch: refetchTopRatedTv,
+  } = useTopRatedTvQuery();
+
+  const { mutate: addFavoriteMovie } = useAddMovieToFavorite(userId, () => {
+    refetchPopularMovies();
+    refetchTopRatedMovies();
+    refetchUpcomingMovies();
+  });
+
+  const { mutate: removeFavoriteMovie } = useRemoveMovieFromFavorite(
+    userId,
+    () => {
+      refetchPopularMovies();
+      refetchTopRatedMovies();
+      refetchUpcomingMovies();
+    },
+  );
+
+  const { mutate: addFavoriteTv } = useAddTvSeriesToFavorite(userId, () => {
+    refetchPopularTv();
+    refetchTopRatedTv();
+  });
+
+  const { mutate: removeFavoriteTv } = useRemoveTvSeriesFromFavorite(
+    userId,
+    () => {
+      refetchPopularTv();
+      refetchTopRatedTv();
+    },
+  );
 
   return (
     <React.Fragment>
@@ -51,7 +106,11 @@ const Home: React.FC = () => {
           {loadingPopularMovies ? (
             <p>Loading Popular...</p>
           ) : (
-            <CardList data={dataPopularMovies} />
+            <CardList
+              data={dataPopularMovies}
+              addFavorite={addFavoriteMovie}
+              removeFavorite={removeFavoriteMovie}
+            />
           )}
         </div>
 
@@ -65,7 +124,11 @@ const Home: React.FC = () => {
           {loadingTopRatedMovies ? (
             <p>Loading TopRated...</p>
           ) : (
-            <CardList data={dataTopRatedMovies} />
+            <CardList
+              data={dataTopRatedMovies}
+              addFavorite={addFavoriteMovie}
+              removeFavorite={removeFavoriteMovie}
+            />
           )}
         </div>
 
@@ -79,7 +142,11 @@ const Home: React.FC = () => {
           {loadingUpcomingMovies ? (
             <p>Loading Upcoming...</p>
           ) : (
-            <CardList data={dataUpcomingMovies} />
+            <CardList
+              data={dataUpcomingMovies}
+              addFavorite={addFavoriteMovie}
+              removeFavorite={removeFavoriteMovie}
+            />
           )}
         </div>
 
@@ -93,7 +160,11 @@ const Home: React.FC = () => {
           {loadingPopularTv ? (
             <p>Loading Popular TV...</p>
           ) : (
-            <CardList data={dataPopularTv} />
+            <CardList
+              data={dataPopularTv}
+              addFavorite={addFavoriteTv}
+              removeFavorite={removeFavoriteTv}
+            />
           )}
         </div>
 
@@ -107,7 +178,11 @@ const Home: React.FC = () => {
           {loadingTopRatedTv ? (
             <p>Loading Top Rated TV...</p>
           ) : (
-            <CardList data={dataTopRatedTv} />
+            <CardList
+              data={dataTopRatedTv}
+              addFavorite={addFavoriteTv}
+              removeFavorite={removeFavoriteTv}
+            />
           )}
         </div>
       </>

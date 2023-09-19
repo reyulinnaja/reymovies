@@ -26,7 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 interface SearchFilterProps {
   search: boolean;
   filter: boolean;
-  homePage: boolean;
+  hiddenSearch: boolean;
   moviesPage: boolean;
   isFilter: () => void;
   includeAdult: boolean;
@@ -42,7 +42,7 @@ interface SearchFilterProps {
 const SearchFilter: React.FC<SearchFilterProps> = ({
   search,
   filter,
-  homePage,
+  hiddenSearch,
   moviesPage,
   isFilter,
   includeAdult,
@@ -66,7 +66,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 disabled={search}
                 className={`rounded-full bg-slate-700 text-slate-300 outline-none ${
                   filter ? "border-2 border-slate-500" : "border-none"
-                } ${homePage && "hidden"} ${search && "cursor-not-allowed"}`}
+                } ${hiddenSearch && "hidden"} ${
+                  search && "cursor-not-allowed"
+                }`}
               >
                 <BsFilter className="h-4 w-4" />
               </Button>

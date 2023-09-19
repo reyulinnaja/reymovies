@@ -1,13 +1,22 @@
+import React from "react";
 import { BaseHeader, Card } from "@/components/common";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useDiscoverMoviesQuery, useSearchMoviesQuery } from "./hooks";
+import {
+  useAddMovieToFavorite,
+  useDiscoverMoviesQuery,
+  useRemoveMovieFromFavorite,
+  useSearchMoviesQuery,
+} from "./hooks";
 import { useNavbarStore } from "@/hooks/useNavbarStore";
 import { shallow } from "zustand/shallow";
 
-const Movies = () => {
-  const [query] = useNavbarStore((state) => [state.query], shallow);
+const Movies: React.FC = () => {
+  const [query, userId] = useNavbarStore(
+    (state) => [state.query, state.userId],
+    shallow,
+  );
 
-  const { data, fetchNextPage, hasNextPage, isLoading } =
+  const { data, fetchNextPage, hasNextPage, isLoading, refetch } =
     useDiscoverMoviesQuery();
 
   const {
@@ -15,10 +24,21 @@ const Movies = () => {
     fetchNextPage: searchFetchNextPage,
     hasNextPage: searchHasNextPage,
     isLoading: searchIsLoading,
+    refetch: searchRefetch,
   } = useSearchMoviesQuery(query);
 
+  const { mutate: addFavorite } = useAddMovieToFavorite(userId, () => {
+    refetch();
+    searchRefetch();
+  });
+
+  const { mutate: removeFavorite } = useRemoveMovieFromFavorite(userId, () => {
+    refetch();
+    searchRefetch();
+  });
+
   return (
-    <div>
+    <React.Fragment>
       <BaseHeader title="Movies - ReyMovies" />
       <h1 className="text-2xl font-bold">Discover Movies</h1>
       <div>
@@ -43,7 +63,8 @@ const Movies = () => {
                       pageData.results.map((item: any) => (
                         <Card
                           key={item.id}
-                          href={`/movies/${item.id}`}
+                          addFavorite={() => addFavorite(item.id)}
+                          removeFavorite={() => removeFavorite(item.id)}
                           {...item}
                         />
                       ))
@@ -71,7 +92,12 @@ const Movies = () => {
               {data.pages.map((pageData, i) => (
                 <div key={i} className="mt-3 grid grid-cols-5 gap-x-4 gap-y-3">
                   {pageData.results.map((item: any) => (
-                    <Card key={item.id} href={`/movies/${item.id}`} {...item} />
+                    <Card
+                      key={item.id}
+                      addFavorite={() => addFavorite(item.id)}
+                      removeFavorite={() => removeFavorite(item.id)}
+                      {...item}
+                    />
                   ))}
                 </div>
               ))}
@@ -79,7 +105,7 @@ const Movies = () => {
           )
         )}
       </div>
-    </div>
+    </React.Fragment>
   );
 };
 

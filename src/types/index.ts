@@ -6,6 +6,7 @@ export interface CardProps {
   release_date: string;
   first_air_date: string;
   vote_average: number;
+  favorite?: boolean;
 }
 
 export interface CardListProps {

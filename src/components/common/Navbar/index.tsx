@@ -27,7 +27,7 @@ import SearchFilter from "../SearchFilter";
 
 const Navbar = () => {
   const router = useRouter();
-  const homePage = router.pathname === "/";
+  const hiddenSearch = ["/favorite", "/"].includes(router.pathname);
   const moviesPage = router.pathname === "/movies";
   const getLocalSessionId =
     global?.localStorage && !!localStorage.getItem("session_id");
@@ -46,6 +46,7 @@ const Navbar = () => {
     sortBy,
     setSortBy,
     setQuery,
+    setUserId,
   ] = useNavbarStore(
     (state) => [
       state.search,
@@ -61,6 +62,7 @@ const Navbar = () => {
       state.sortBy,
       state.setSortBy,
       state.setQuery,
+      state.setUserId,
     ],
     shallow,
   );
@@ -75,14 +77,14 @@ const Navbar = () => {
   const { data } = usePostSessionIdQuery();
 
   const { data: useAccountDetails, isSuccess: useAccountDetailsSuccess } =
-    useGetAccountDetailsQuery(getLocalSessionId);
+    useGetAccountDetailsQuery(getLocalSessionId, setUserId);
 
   const { mutate: useLogout } = useLogoutMutation();
 
   return (
     <nav
       className={`fixed right-5 z-40 flex w-full items-center justify-end gap-2 py-3 ${
-        homePage ? "w-auto" : "w-full bg-slate-950/50 backdrop-blur-md"
+        hiddenSearch ? "w-auto" : "w-full bg-slate-950/50 backdrop-blur-md"
       }`}
     >
       {/* Search Input */}
@@ -90,7 +92,7 @@ const Navbar = () => {
         search={search}
         moviesPage={moviesPage}
         handleSearch={handleSearch}
-        homePage={homePage}
+        hiddenSeach={hiddenSearch}
         isSearch={isSearch}
       />
 
@@ -98,7 +100,7 @@ const Navbar = () => {
       <SearchFilter
         search={search}
         filter={filter}
-        homePage={homePage}
+        hiddenSearch={hiddenSearch}
         moviesPage={moviesPage}
         isFilter={isFilter}
         includeAdult={includeAdult}

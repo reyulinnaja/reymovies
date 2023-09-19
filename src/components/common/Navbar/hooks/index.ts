@@ -5,6 +5,7 @@ import {
   postSessionIdUseCase,
 } from "@/useCases/AuthUseCases";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import type { NavbarStore } from "@/hooks/useNavbarStore";
 
 const windows =
   global?.window && window.location.href.includes("approved=true");
@@ -26,10 +27,13 @@ export const usePostSessionIdQuery = () => {
   });
 };
 
-export const useGetAccountDetailsQuery = (getLocalSessionId: any) => {
+export const useGetAccountDetailsQuery = (
+  getLocalSessionId: any,
+  setUserId: NavbarStore["setUserId"],
+) => {
   return useQuery({
     queryKey: ["account_details"],
-    queryFn: async () => getAccountDetailsUseCase(),
+    queryFn: async () => getAccountDetailsUseCase(setUserId),
     enabled: getLocalSessionId,
   });
 };

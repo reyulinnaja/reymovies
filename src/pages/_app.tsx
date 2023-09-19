@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 import { Navbar, Sidebar } from "@/components/common";
+import { Toaster } from "@/components/ui/toaster";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -30,6 +31,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <div className="w-full pb-7 pl-56 pr-8 pt-16">
           <Component {...pageProps} />
         </div>
+        <Toaster />
       </div>
     </QueryClientProvider>
   );
