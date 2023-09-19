@@ -5,6 +5,11 @@ import {
   postSessionId,
 } from "@/services/AuthServices";
 import type { NavbarStore } from "@/hooks/useNavbarStore";
+import {
+  deleteLocalRequestToken,
+  deleteLocalSessionId,
+  setLocalSessionId,
+} from "@/lib/utils";
 
 export const getRequestTokenUseCase = async () => {
   const response = await getRequestToken();
@@ -17,11 +22,11 @@ export const postSessionIdUseCase = async () => {
   try {
     const response = await postSessionId();
 
-    localStorage.setItem("session_id", response.data.session_id);
+    setLocalSessionId(response.data.session_id);
     return response.data;
   } catch (error) {
-    localStorage.removeItem("request_token");
-    localStorage.removeItem("session_id");
+    deleteLocalRequestToken();
+    deleteLocalSessionId();
   }
 };
 

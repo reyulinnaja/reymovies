@@ -11,13 +11,27 @@ import { shallow } from "zustand/shallow";
 import React from "react";
 
 const TvSeries: React.FC = () => {
-  const [query, userId] = useNavbarStore(
-    (state) => [state.query, state.userId],
-    shallow,
-  );
+  const [query, sortName, sortBy, includeAdult, includeVideo, userId] =
+    useNavbarStore(
+      (state) => [
+        state.query,
+        state.sortName,
+        state.sortBy,
+        state.includeAdult,
+        state.includeVideo,
+        state.userId,
+      ],
+      shallow,
+    );
 
   const { data, fetchNextPage, hasNextPage, isLoading, refetch } =
-    useDiscoverTvSeriesQuery();
+    useDiscoverTvSeriesQuery({
+      userId,
+      sortName,
+      sortBy,
+      includeAdult,
+      includeVideo,
+    });
 
   const {
     data: searchData,
@@ -25,7 +39,10 @@ const TvSeries: React.FC = () => {
     hasNextPage: searchHasNextPage,
     isLoading: searchIsLoading,
     refetch: searchRefetch,
-  } = useSearchTvSeriesQuery(query);
+  } = useSearchTvSeriesQuery({
+    query,
+    userId,
+  });
 
   const { mutate: addFavorite } = useAddTvSeriesToFavorite(userId, () => {
     refetch();

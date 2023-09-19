@@ -15,3 +15,27 @@ export const debounce = (fn: DebounceFn, delay = 100) => {
     timeoutID = setTimeout(() => fn(...args), delay);
   };
 };
+
+export const getLocalSessionId = () => {
+  return localStorage.getItem("session_id");
+};
+
+export const getLocalRequestToken = () => {
+  return localStorage.getItem("request_token");
+};
+
+export const deleteLocalSessionId = () => {
+  localStorage.removeItem("session_id");
+};
+
+export const deleteLocalRequestToken = () => {
+  localStorage.removeItem("request_token");
+};
+
+export const setLocalSessionId = (session_id: string) => {
+  localStorage.setItem("session_id", session_id);
+};
+
+export const setLocalRequestToken = (request_token: string) => {
+  localStorage.setItem("request_token", request_token);
+};

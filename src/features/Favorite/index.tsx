@@ -11,7 +11,7 @@ const Favorite: React.FC = () => {
   const [userId] = useNavbarStore((state) => [state.userId], shallow);
 
   const { data, fetchNextPage, hasNextPage, isLoading, refetch } =
-    useFavoriteMoviesQuery();
+    useFavoriteMoviesQuery(userId);
 
   const {
     data: dataTvSeries,
@@ -19,7 +19,7 @@ const Favorite: React.FC = () => {
     hasNextPage: hasNextPageTvSeries,
     isLoading: isLoadingTvSeries,
     refetch: refetchTvSeries,
-  } = useFavoriteTvSeriesQuery();
+  } = useFavoriteTvSeriesQuery(userId);
 
   const { mutate: removeFavoriteMovie } = useRemoveMovieFromFavorite(
     userId,

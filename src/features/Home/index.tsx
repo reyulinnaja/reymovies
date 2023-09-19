@@ -32,31 +32,31 @@ const Home: React.FC = () => {
     data: dataPopularMovies,
     isLoading: loadingPopularMovies,
     refetch: refetchPopularMovies,
-  } = usePopularMoviesQuery();
+  } = usePopularMoviesQuery(userId);
 
   const {
     data: dataTopRatedMovies,
     isLoading: loadingTopRatedMovies,
     refetch: refetchTopRatedMovies,
-  } = useTopRatedMoviesQuery();
+  } = useTopRatedMoviesQuery(userId);
 
   const {
     data: dataUpcomingMovies,
     isLoading: loadingUpcomingMovies,
     refetch: refetchUpcomingMovies,
-  } = useUpcomingMoviesQuery();
+  } = useUpcomingMoviesQuery(userId);
 
   const {
     data: dataPopularTv,
     isLoading: loadingPopularTv,
     refetch: refetchPopularTv,
-  } = usePopularTvQuery();
+  } = usePopularTvQuery(userId);
 
   const {
     data: dataTopRatedTv,
     isLoading: loadingTopRatedTv,
     refetch: refetchTopRatedTv,
-  } = useTopRatedTvQuery();
+  } = useTopRatedTvQuery(userId);
 
   const { mutate: addFavoriteMovie } = useAddMovieToFavorite(userId, () => {
     refetchPopularMovies();

@@ -11,13 +11,27 @@ import { useNavbarStore } from "@/hooks/useNavbarStore";
 import { shallow } from "zustand/shallow";
 
 const Movies: React.FC = () => {
-  const [query, userId] = useNavbarStore(
-    (state) => [state.query, state.userId],
-    shallow,
-  );
+  const [query, sortName, sortBy, includeAdult, includeVideo, userId] =
+    useNavbarStore(
+      (state) => [
+        state.query,
+        state.sortName,
+        state.sortBy,
+        state.includeAdult,
+        state.includeVideo,
+        state.userId,
+      ],
+      shallow,
+    );
 
   const { data, fetchNextPage, hasNextPage, isLoading, refetch } =
-    useDiscoverMoviesQuery();
+    useDiscoverMoviesQuery({
+      userId,
+      sortName,
+      sortBy,
+      includeAdult,
+      includeVideo,
+    });
 
   const {
     data: searchData,
@@ -25,7 +39,10 @@ const Movies: React.FC = () => {
     hasNextPage: searchHasNextPage,
     isLoading: searchIsLoading,
     refetch: searchRefetch,
-  } = useSearchMoviesQuery(query);
+  } = useSearchMoviesQuery({
+    userId,
+    query,
+  });
 
   const { mutate: addFavorite } = useAddMovieToFavorite(userId, () => {
     refetch();
